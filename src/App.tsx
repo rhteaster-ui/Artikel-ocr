@@ -748,9 +748,54 @@ export default function App() {
                 </div>
               )}
 
-              {/* Developer Profile Card */}
-              <div className="pt-6">
-                <SocialDev variant="full" />
+              {/* Bottom Informational Grid (About, Tech, and Credits) */}
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6 pt-8 border-t border-brand-surface/80">
+                {/* Column 1: Tentang Veritas */}
+                <div className="space-y-3 bg-brand-surface/30 p-5 rounded-2xl border border-brand-surface/40 flex flex-col justify-between">
+                  <div className="space-y-2.5">
+                    <div className="flex items-center gap-1.5 text-brand-text font-black text-xs font-mono tracking-wider uppercase">
+                      <Info className="w-4 h-4 text-brand-primary" />
+                      <span>Mengenal Veritas</span>
+                    </div>
+                    <p className="text-[11px] leading-relaxed text-brand-muted">
+                      Veritas adalah asisten pintar berbasis akademik yang memfasilitasi analisis cepat artikel ilmiah, jurnalisme, dan dokumen PDF. Dilengkapi dengan deteksi bias, ekstraksi metodologi, dan verifikasi klaim grounded tanpa halusinasi.
+                    </p>
+                  </div>
+                  <span className="text-[9px] text-brand-muted/50 font-mono tracking-widest uppercase mt-4 block">PLATFORM VERSI 2.4.0</span>
+                </div>
+
+                {/* Column 2: Integritas & Fitur */}
+                <div className="space-y-3 bg-brand-surface/30 p-5 rounded-2xl border border-brand-surface/40 flex flex-col justify-between">
+                  <div className="space-y-2.5">
+                    <div className="flex items-center gap-1.5 text-brand-text font-black text-xs font-mono tracking-wider uppercase">
+                      <Cpu className="w-4 h-4 text-brand-primary" />
+                      <span>Integritas Sistem</span>
+                    </div>
+                    <ul className="text-[11px] space-y-2 text-brand-muted font-medium">
+                      <li className="flex items-center gap-2">
+                        <span className="text-brand-primary font-black">✓</span> Grounded AI Fact-Checker
+                      </li>
+                      <li className="flex items-center gap-2">
+                        <span className="text-brand-primary font-black">✓</span> Native CORS URL Fetcher
+                      </li>
+                      <li className="flex items-center gap-2">
+                        <span className="text-brand-primary font-black">✓</span> OCR Scanner Integrasi
+                      </li>
+                      <li className="flex items-center gap-2">
+                        <span className="text-brand-primary font-black">✓</span> Keamanan Data 100% Lokal
+                      </li>
+                    </ul>
+                  </div>
+                  <span className="text-[9px] text-emerald-500/80 font-mono tracking-widest uppercase mt-4 flex items-center gap-1">
+                    <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                    SISTEM AMAN &amp; AKTIF
+                  </span>
+                </div>
+
+                {/* Column 3: Pembuat & Kontak (Sleek compact layout) */}
+                <div className="bg-brand-surface/30 p-5 rounded-2xl border border-brand-surface/40">
+                  <SocialDev variant="footer-column" />
+                </div>
               </div>
             </motion.div>
           ) : (
