@@ -63,68 +63,119 @@ export default function SocialDev({ variant = "full" }: SocialDevProps) {
   const telegramUrl = "https://t.me/rAi_engine";
   const personalWebUrl = "https://www.rhmt.biz.id/";
 
-  // Social Dev Layout matching the requested mockup screenshot precisely
-  return (
-    <div className="w-full flex flex-col items-center justify-center py-10 px-4 bg-[#0a0b0d] rounded-3xl border border-zinc-900/40">
-      {/* 1. Sleek Rounded Dark Card - Precise proportions */}
-      <div className="max-w-[350px] w-full bg-[#111214] border border-zinc-800/60 rounded-[1.8rem] p-8 text-center shadow-2xl relative overflow-hidden">
-        {/* Subtle background glow */}
-        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-28 h-28 bg-[#00a884]/5 rounded-full blur-3xl pointer-events-none" />
-
-        {/* Circular Profile Avatar with exact styling */}
-        <div className="relative mx-auto w-[76px] h-[76px] rounded-full flex items-center justify-center mb-4">
-          <div className="absolute inset-0 rounded-full border border-zinc-700/60 animate-pulse" />
+  if (variant === "footer-column") {
+    return (
+      <div className="space-y-3">
+        <div className="flex items-center gap-2">
           <img
             src={profileImg}
-            alt="[𝙍]𝙝𝙢𝙏 Profile"
+            alt="Profile Dev"
             referrerPolicy="no-referrer"
-            className="w-[70px] h-[70px] rounded-full object-cover border-2 border-[#111214]"
+            className="w-8 h-8 rounded-full border border-brand-primary/60 object-cover"
           />
-          {/* Active Online Indicator Pulse */}
-          <span className="absolute bottom-1 right-1 h-3 w-3 rounded-full bg-emerald-500 border-[2px] border-[#111214]" />
+          <div>
+            <h4 className="text-[11px] font-black text-brand-text truncate leading-tight">
+              [𝙍]𝙝𝙢𝙏
+            </h4>
+            <p className="text-[8px] text-brand-muted font-mono truncate tracking-wider mt-0.5">
+              CODE &amp; AI DEVELOPER
+            </p>
+          </div>
         </div>
-
-        {/* Developer Custom Star Name */}
-        <h3 className="text-white font-extrabold text-[14px] sm:text-[14.5px] tracking-wide flex items-center justify-center gap-1.5 mb-2.5">
-          <span className="text-zinc-400">✨•° :</span>
-          <span className="text-white font-black">[𝙍]𝙝𝙢𝙏 | 𝘾𝙤𝙙𝙚⚙️𝘼𝙄 𝙡</span>
-          <span className="text-zinc-400">:•° ✨</span>
-        </h3>
-
-        {/* Beautiful Description Text */}
-        <p className="text-[11px] sm:text-[11.5px] text-zinc-400 leading-relaxed font-normal max-w-xs mx-auto mb-5 px-1">
-          Gabung saluran WhatsApp resmi sekarang untuk update script, engine AI, template desain, dan diskusi pemrograman gratis.
+        <p className="text-[10px] text-brand-muted leading-relaxed">
+          Platform Veritas dikembangkan oleh [𝙍]𝙝𝙢𝙏 untuk memajukan integritas literasi ilmiah berbasis AI.
         </p>
+      </div>
+    );
+  }
 
-        {/* Custom Green WhatsApp Channel Button with direct cursor and smooth hover */}
+  if (variant === "compact") {
+    return (
+      <div className="space-y-3 pt-3 border-t border-brand-bg">
+        <div className="flex items-center gap-2">
+          <img
+            src={profileImg}
+            alt="Profile Dev"
+            referrerPolicy="no-referrer"
+            className="w-7 h-7 rounded-full border border-brand-primary/40 object-cover"
+          />
+          <div>
+            <h4 className="text-[10px] font-bold text-brand-text">[𝙍]𝙝𝙢𝙏</h4>
+            <p className="text-[8px] text-brand-muted font-mono">CODE &amp; AI DEVELOPER</p>
+          </div>
+        </div>
         <a
           href={whatsappUrl}
           target="_blank"
           rel="noopener noreferrer"
-          className="inline-flex items-center justify-center gap-2 bg-[#00a884] hover:bg-[#008f72] active:scale-95 text-white font-extrabold text-[11.5px] px-6 py-2.5 rounded-full transition-all duration-200 shadow-md cursor-pointer"
+          className="flex items-center justify-center gap-1.5 p-1.5 rounded-lg bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-500 border border-emerald-500/20 text-[10px] font-bold transition-all"
+        >
+          <WhatsAppIcon className="w-3.5 h-3.5" />
+          <span>Join WhatsApp Channel</span>
+        </a>
+      </div>
+    );
+  }
+
+  // Social Dev Layout matching the requested mockup precisely - NO CARD WRAPPER
+  return (
+    <div className="w-full flex flex-col items-center justify-center py-6 px-4 bg-transparent text-center select-none">
+      {/* 1. Main Avatar, Title, Description, and Channel Button (No card block around them) */}
+      <div className="max-w-[420px] w-full flex flex-col items-center">
+        {/* Circular Profile Avatar with custom double border */}
+        <div className="relative mx-auto w-[82px] h-[82px] rounded-full flex items-center justify-center mb-4">
+          <div className="absolute inset-0 rounded-full border border-emerald-500/40 animate-pulse pointer-events-none" />
+          <img
+            src={profileImg}
+            alt="[𝙍]𝙝𝙢𝙏 Profile"
+            referrerPolicy="no-referrer"
+            className="w-[74px] h-[74px] rounded-full object-cover border-2 border-black"
+          />
+          {/* Active Online Indicator Pulse */}
+          <span className="absolute bottom-1 right-1 h-3.5 w-3.5 rounded-full bg-emerald-500 border-2 border-black" />
+        </div>
+
+        {/* Developer Custom Star Name */}
+        <h3 className="text-white font-extrabold text-[15px] sm:text-[16px] tracking-wide flex items-center justify-center gap-1.5 mb-3">
+          <span className="text-emerald-400">✨•° :</span>
+          <span className="text-white font-black tracking-wide">[𝙍]𝙝𝙢𝙏 | 𝘾𝙤𝙙𝙚⚙️𝘼𝙄 𝙡</span>
+          <span className="text-emerald-400">:•° ✨</span>
+        </h3>
+
+        {/* Beautiful Description Text - Bright and High Contrast */}
+        <p className="text-[12px] sm:text-[12.5px] text-zinc-200 leading-relaxed font-normal max-w-sm mx-auto mb-6 px-2">
+          Gabung saluran WhatsApp resmi sekarang untuk update script, engine AI, template desain, dan diskusi pemrograman gratis.
+        </p>
+
+        {/* Custom Green WhatsApp Channel Button with smooth hover */}
+        <a
+          href={whatsappUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="inline-flex items-center justify-center gap-2.5 bg-[#00a884] hover:bg-[#00c79e] active:scale-95 text-white font-extrabold text-[12px] px-8 py-3 rounded-full transition-all duration-200 shadow-lg shadow-emerald-950/40 cursor-pointer"
         >
           <WhatsAppIcon className="w-4 h-4 text-white flex-shrink-0" />
           <span>Join Channel WA</span>
         </a>
       </div>
 
-      {/* 2. Media Links & Credit Section Below Card */}
-      <div className="w-full flex flex-col items-center mt-10">
-        <h4 className="text-[9.5px] font-black text-zinc-500 font-mono tracking-[0.25em] text-center mb-5 uppercase">
+      {/* 2. Media Links & Credit Section */}
+      <div className="w-full flex flex-col items-center mt-12">
+        <h4 className="text-[10px] font-black text-zinc-300 font-mono tracking-[0.25em] text-center mb-5 uppercase">
           SOCIAL MEDIA DEVELOPER
         </h4>
 
-        {/* Row of centered circular icons with hover brand effects */}
-        <div className="flex items-center gap-3.5 justify-center">
+        {/* Row of centered circular icons with high contrast hover effects */}
+        <div className="flex items-center gap-4 justify-center">
           {/* WhatsApp */}
           <a
             href={whatsappUrl}
             target="_blank"
             rel="noopener noreferrer"
             title="WhatsApp Channel"
-            className="w-[44px] h-[44px] rounded-full border border-zinc-800/80 bg-[#111214] hover:bg-zinc-900 flex items-center justify-center text-zinc-400 hover:text-emerald-400 hover:border-emerald-500/40 hover:scale-105 active:scale-95 transition-all duration-200 cursor-pointer"
+            className="w-[46px] h-[46px] rounded-full border border-zinc-700 bg-zinc-950 hover:bg-zinc-900 flex items-center justify-center text-zinc-200 hover:text-emerald-400 hover:border-emerald-500/50 hover:scale-110 active:scale-95 transition-all duration-200 cursor-pointer"
           >
-            <WhatsAppIcon className="w-4.5 h-4.5" />
+            <WhatsAppIcon className="w-5 h-5" />
           </a>
 
           {/* Instagram */}
@@ -133,9 +184,9 @@ export default function SocialDev({ variant = "full" }: SocialDevProps) {
             target="_blank"
             rel="noopener noreferrer"
             title="Instagram"
-            className="w-[44px] h-[44px] rounded-full border border-zinc-800/80 bg-[#111214] hover:bg-zinc-900 flex items-center justify-center text-zinc-400 hover:text-pink-500 hover:border-pink-500/40 hover:scale-105 active:scale-95 transition-all duration-200 cursor-pointer"
+            className="w-[46px] h-[46px] rounded-full border border-zinc-700 bg-zinc-950 hover:bg-zinc-900 flex items-center justify-center text-zinc-200 hover:text-pink-500 hover:border-pink-500/50 hover:scale-110 active:scale-95 transition-all duration-200 cursor-pointer"
           >
-            <InstagramIcon className="w-4.5 h-4.5" />
+            <InstagramIcon className="w-5 h-5" />
           </a>
 
           {/* TikTok */}
@@ -144,9 +195,9 @@ export default function SocialDev({ variant = "full" }: SocialDevProps) {
             target="_blank"
             rel="noopener noreferrer"
             title="TikTok"
-            className="w-[44px] h-[44px] rounded-full border border-zinc-800/80 bg-[#111214] hover:bg-zinc-900 flex items-center justify-center text-zinc-400 hover:text-purple-400 hover:border-purple-500/40 hover:scale-105 active:scale-95 transition-all duration-200 cursor-pointer"
+            className="w-[46px] h-[46px] rounded-full border border-zinc-700 bg-zinc-950 hover:bg-zinc-900 flex items-center justify-center text-zinc-200 hover:text-purple-400 hover:border-purple-500/50 hover:scale-110 active:scale-95 transition-all duration-200 cursor-pointer"
           >
-            <TikTokIcon className="w-4.5 h-4.5" />
+            <TikTokIcon className="w-5 h-5" />
           </a>
 
           {/* Telegram */}
@@ -155,17 +206,17 @@ export default function SocialDev({ variant = "full" }: SocialDevProps) {
             target="_blank"
             rel="noopener noreferrer"
             title="Telegram"
-            className="w-[44px] h-[44px] rounded-full border border-zinc-800/80 bg-[#111214] hover:bg-zinc-900 flex items-center justify-center text-zinc-400 hover:text-sky-400 hover:border-sky-500/40 hover:scale-105 active:scale-95 transition-all duration-200 cursor-pointer"
+            className="w-[46px] h-[46px] rounded-full border border-zinc-700 bg-zinc-950 hover:bg-zinc-900 flex items-center justify-center text-zinc-200 hover:text-sky-400 hover:border-sky-500/50 hover:scale-110 active:scale-95 transition-all duration-200 cursor-pointer"
           >
-            <TelegramIcon className="w-4.5 h-4.5" />
+            <TelegramIcon className="w-5 h-5" />
           </a>
         </div>
 
-        {/* Divider Line precisely matching the design */}
-        <div className="w-full max-w-[320px] border-t border-zinc-900/80 my-7" />
+        {/* Divider Line precisely matching the design - brightened */}
+        <div className="w-full max-w-[340px] border-t border-zinc-800/60 my-8" />
 
         {/* Beautiful footer branding credits */}
-        <p className="text-[11px] text-zinc-500 font-mono tracking-wide text-center">
+        <p className="text-[11.5px] text-zinc-300 font-mono tracking-wide text-center">
           Credit by{" "}
           <a
             href={personalWebUrl}
@@ -187,10 +238,10 @@ export default function SocialDev({ variant = "full" }: SocialDevProps) {
           href={whatsappUrl}
           target="_blank"
           rel="noopener noreferrer"
-          className="inline-flex items-center gap-1.5 text-[11px] font-bold text-zinc-400 hover:text-emerald-400 transition-colors mt-3 font-mono cursor-pointer"
+          className="inline-flex items-center gap-1.5 text-[11.5px] font-black text-zinc-200 hover:text-emerald-400 transition-colors mt-3.5 font-mono cursor-pointer"
         >
           <span>WhatsApp Rhmt</span>
-          <span className="text-[11px] font-sans">➔</span>
+          <span className="text-[12px] font-sans">➔</span>
         </a>
       </div>
     </div>
