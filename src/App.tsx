@@ -748,8 +748,8 @@ export default function App() {
                 </div>
               )}
 
-              {/* Bottom Informational Grid (About, Tech, and Credits) */}
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6 pt-8 border-t border-brand-surface/80">
+              {/* Bottom Informational Grid (About & Tech) */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-8 border-t border-brand-surface/80">
                 {/* Column 1: Tentang Veritas */}
                 <div className="space-y-3 bg-brand-surface/30 p-5 rounded-2xl border border-brand-surface/40 flex flex-col justify-between">
                   <div className="space-y-2.5">
@@ -791,11 +791,6 @@ export default function App() {
                     SISTEM AMAN &amp; AKTIF
                   </span>
                 </div>
-
-                {/* Column 3: Pembuat & Kontak (Sleek compact layout) */}
-                <div className="bg-brand-surface/30 p-5 rounded-2xl border border-brand-surface/40">
-                  <SocialDev variant="footer-column" />
-                </div>
               </div>
             </motion.div>
           ) : (
@@ -818,16 +813,22 @@ export default function App() {
         </AnimatePresence>
       </main>
 
-      {/* Footer Credit */}
-      <footer id="app-footer" className="bg-brand-surface/30 border-t border-brand-surface/60 py-6 px-4">
-        <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-brand-muted/70">
-          <p>© 2026 VERITAS Knowledge Platform. Diperkuat dengan Grounded Prompting & Terintegrasi iLovePDF API.</p>
-          <div className="flex gap-5">
-            <span className="hover:text-brand-primary transition-colors cursor-help">Syarat Layanan</span>
-            <span className="hover:text-brand-primary transition-colors cursor-help">Kebijakan Privasi</span>
-          </div>
+      {/* Full-width seamless pure black lower layout (Always visible) */}
+      <div className="w-full bg-[#000000] border-t border-zinc-900/60 mt-12 pt-8">
+        <div className="max-w-7xl mx-auto px-4">
+          <SocialDev variant="full" />
         </div>
-      </footer>
+        
+        <footer id="app-footer" className="bg-[#000000] border-t border-zinc-900/40 py-8 px-4 mt-8">
+          <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-zinc-400 select-none">
+            <p className="font-medium text-zinc-400">© 2026 VERITAS Knowledge Platform. Diperkuat dengan Grounded Prompting & Terintegrasi iLovePDF API.</p>
+            <div className="flex gap-5 font-semibold text-zinc-300">
+              <span className="hover:text-emerald-400 transition-colors cursor-help">Syarat Layanan</span>
+              <span className="hover:text-emerald-400 transition-colors cursor-help">Kebijakan Privasi</span>
+            </div>
+          </div>
+        </footer>
+      </div>
     </div>
   );
 }
