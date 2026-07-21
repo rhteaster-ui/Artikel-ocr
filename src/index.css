@@ -1,0 +1,122 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap');
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-display: "Space Grotesk", sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, monospace;
+
+  /* Dynamically bind colors to CSS custom properties */
+  --color-brand-bg: var(--brand-bg);
+  --color-brand-surface: var(--brand-surface);
+  --color-brand-primary: var(--brand-primary);
+  --color-brand-secondary: var(--brand-secondary);
+  --color-brand-text: var(--brand-text);
+  --color-brand-muted: var(--brand-muted);
+  --color-brand-success: var(--brand-success);
+  --color-brand-warning: var(--brand-warning);
+  --color-brand-error: var(--brand-error);
+  --color-brand-border: var(--brand-border);
+  --color-brand-btn-bg: var(--brand-btn-bg);
+  --color-brand-btn-text: var(--brand-btn-text);
+}
+
+/* Theme definition rules (Light mode default) */
+:root, .theme-light {
+  --brand-bg: #F3F4F6;
+  --brand-surface: #FFFFFF;
+  --brand-primary: #D4AF37;       /* Gold accent */
+  --brand-secondary: #0F172A;     /* Dark Navy slate */
+  --brand-text: #1E293B;          /* Highly legible charcoal text */
+  --brand-muted: #64748B;         /* Slate gray for secondary text */
+  --brand-success: #16A34A;
+  --brand-warning: #D97706;
+  --brand-error: #DC2626;
+  --brand-border: #E2E8F0;        /* Light clean border */
+  --brand-btn-bg: #0F172A;        /* Premium dark slate primary action button */
+  --brand-btn-text: #FFFFFF;
+}
+
+.theme-dark {
+  --brand-bg: #0B1020;
+  --brand-surface: #131A2D;
+  --brand-primary: #D4AF37;       /* Premium Gold */
+  --brand-secondary: #F4E3A1;     /* Pale Gold */
+  --brand-text: #F8FAFC;          /* Clean white text */
+  --brand-muted: #94A3B8;         /* Light slate gray */
+  --brand-success: #22C55E;
+  --brand-warning: #F59E0B;
+  --brand-error: #EF4444;
+  --brand-border: #1E293B;        /* Dark sleek border */
+  --brand-btn-bg: #D4AF37;        /* Gold button background */
+  --brand-btn-text: #0B1020;      /* Dark text on gold button */
+}
+
+.theme-sepia {
+  --brand-bg: #F5EFEB;
+  --brand-surface: #FAF5F0;
+  --brand-primary: #8C6239;       /* Rich warm bronze */
+  --brand-secondary: #AF804F;
+  --brand-text: #3E2F20;          /* Ink brown */
+  --brand-muted: #7A6958;         /* Muted leather */
+  --brand-success: #15803D;
+  --brand-warning: #B45309;
+  --brand-error: #B91C1C;
+  --brand-border: #EADCD3;        /* Warm parchment border */
+  --brand-btn-bg: #5C3D2E;        /* Dark brown button */
+  --brand-btn-text: #FAF5F0;
+}
+
+body {
+  background-color: var(--brand-bg);
+  color: var(--brand-text);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* Client-Side Copy/Scrape Mitigation */
+* {
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+  -webkit-user-drag: none;
+}
+
+/* Permit normal typing and interaction inside form inputs, textareas, and interactive prompts */
+input, textarea, select, [contenteditable="true"], .selectable-text, .selectable-text * {
+  -webkit-user-select: text !important;
+  -moz-user-select: text !important;
+  -ms-user-select: text !important;
+  user-select: text !important;
+}
+
+/* Explicit fallback utility classes to safeguard CSS resolution across engines */
+.bg-brand-bg { background-color: var(--brand-bg) !important; }
+.bg-brand-surface { background-color: var(--brand-surface) !important; }
+.text-brand-primary { color: var(--brand-primary) !important; }
+.text-brand-secondary { color: var(--brand-secondary) !important; }
+.text-brand-text { color: var(--brand-text) !important; }
+.text-brand-muted { color: var(--brand-muted) !important; }
+.text-brand-success { color: var(--brand-success) !important; }
+.text-brand-warning { color: var(--brand-warning) !important; }
+.text-brand-error { color: var(--brand-error) !important; }
+.border-brand-surface { border-color: var(--brand-border) !important; }
+
+/* Custom scrollbar for modern and professional look */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: var(--brand-bg);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--brand-muted);
+  opacity: 0.3;
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--brand-primary);
+}

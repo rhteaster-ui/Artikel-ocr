@@ -1,0 +1,24 @@
+{
+  "short_name": "Veritas",
+  "name": "Veritas - Grounded Context & Academic Intelligence",
+  "description": "Verifikasi keaslian berita, artikel, dan jurnal ilmiah bebas halusinasi dengan analisis kritis Gemini AI.",
+  "icons": [
+    {
+      "src": "/favicon.jpg?v=2",
+      "type": "image/jpeg",
+      "sizes": "192x192",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/favicon.jpg?v=2",
+      "type": "image/jpeg",
+      "sizes": "512x512",
+      "purpose": "any maskable"
+    }
+  ],
+  "start_url": "/",
+  "background_color": "#090d16",
+  "theme_color": "#090d16",
+  "display": "standalone",
+  "orientation": "portrait"
+}
