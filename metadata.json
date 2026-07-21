@@ -1,6 +1,6 @@
 {
   "name": "AI Article Analyzer",
-  "description": "An interactive web tool focusing strictly on extracting and analyzing articles from URLs, offering smart summaries, claim verification, tone profiling, and AI-suggested Open Topics for active discussions.",
+  "description": "Veritas AI - Platform asisten akademik cerdas untuk analisis, verifikasi klaim, pendeteksi bias, serta rangkum dokumen PDF dan URL artikel ilmiah secara instan tanpa halusinasi.",
   "requestFramePermissions": [],
   "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
 }
