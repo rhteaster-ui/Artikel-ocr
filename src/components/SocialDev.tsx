@@ -1,11 +1,10 @@
 import React from "react";
-import { Globe, Cpu } from "lucide-react";
 
 interface SocialDevProps {
-  variant?: "compact" | "full";
+  variant?: "compact" | "full" | "footer-column";
 }
 
-// High-fidelity official brand SVG icons
+// Highly precise brand SVGs matching the official logos
 const WhatsAppIcon = ({ className }: { className?: string }) => (
   <svg
     viewBox="0 0 24 24"
@@ -22,7 +21,7 @@ const InstagramIcon = ({ className }: { className?: string }) => (
     viewBox="0 0 24 24"
     fill="none"
     stroke="currentColor"
-    strokeWidth="2"
+    strokeWidth="2.5"
     strokeLinecap="round"
     strokeLinejoin="round"
     className={className}
@@ -58,167 +57,141 @@ const TelegramIcon = ({ className }: { className?: string }) => (
 
 export default function SocialDev({ variant = "full" }: SocialDevProps) {
   const profileImg = "https://www.rhmt.biz.id/gambar/pp-dev.png";
-  const devName = "✧･ﾟ: [𝙍]𝙝𝙢𝙏 | 𝘾𝙤𝙙𝙚⚙️𝘼𝙄 𝙡 :･ﾟ✧";
-  
-  const socialLinks = [
-    {
-      name: "WhatsApp Channel",
-      label: "✧･ﾟ: [𝙍]𝙝𝙢𝙏 | 𝘾𝙤𝙙𝙚⚙️𝘼𝙄 𝙡 :･ﾟ✧",
-      url: "https://whatsapp.com/channel/0029VbBjyjlJ93wa6hwSWa0p",
-      icon: WhatsAppIcon,
-      color: "hover:text-emerald-500 hover:border-emerald-500/30 hover:bg-emerald-500/5",
-      brandColor: "text-emerald-500",
-    },
-    {
-      name: "Instagram",
-      label: "@rahmt_nhw",
-      url: "https://www.instagram.com/rahmt_nhw?igsh=MWQwcnB3bTA2ZnVidg==",
-      icon: InstagramIcon,
-      color: "hover:text-pink-500 hover:border-pink-500/30 hover:bg-pink-500/5",
-      brandColor: "text-pink-500",
-    },
-    {
-      name: "TikTok",
-      label: "@r_hmtofc",
-      url: "https://www.tiktok.com/@r_hmtofc?_r=1&_t=ZS-94KRfWQjeUu",
-      icon: TikTokIcon,
-      color: "hover:text-purple-500 hover:border-purple-500/30 hover:bg-purple-500/5",
-      brandColor: "text-purple-400",
-    },
-    {
-      name: "Telegram",
-      label: "rAi_engine",
-      url: "https://t.me/rAi_engine",
-      icon: TelegramIcon,
-      color: "hover:text-sky-500 hover:border-sky-500/30 hover:bg-sky-500/5",
-      brandColor: "text-sky-400",
-    },
-    {
-      name: "Profil Dev",
-      label: "rhmt.biz.id",
-      url: "https://www.rhmt.biz.id/",
-      icon: Globe,
-      color: "hover:text-brand-primary hover:border-brand-primary/30 hover:bg-brand-primary/5",
-      brandColor: "text-brand-primary",
-    }
-  ];
+  const whatsappUrl = "https://whatsapp.com/channel/0029VbBjyjlJ93wa6hwSWa0p";
+  const instagramUrl = "https://www.instagram.com/rahmt_nhw?igsh=MWQwcnB3bTA2ZnVidg==";
+  const tiktokUrl = "https://www.tiktok.com/@r_hmtofc?_r=1&_t=ZS-94KRfWQjeUu";
+  const telegramUrl = "https://t.me/rAi_engine";
+  const personalWebUrl = "https://www.rhmt.biz.id/";
 
-  if (variant === "compact") {
-    return (
-      <div className="space-y-3 pt-3 border-t border-brand-bg">
-        <div className="flex items-center gap-1.5 text-brand-muted text-[10px] font-black uppercase tracking-wider font-mono">
-          <Cpu className="w-3.5 h-3.5 text-brand-primary" />
-          <span>Hubungi Pengembang (Dev)</span>
-        </div>
-        
-        <div className="bg-brand-bg/40 p-3 rounded-2xl border border-brand-surface space-y-3.5">
-          <div className="flex items-center gap-3">
-            <div className="relative flex-shrink-0">
-              <img
-                src={profileImg}
-                alt="Profile Dev"
-                referrerPolicy="no-referrer"
-                className="w-10 h-10 rounded-full border border-brand-primary object-cover"
-              />
-              <span className="absolute bottom-0 right-0 h-2.5 w-2.5 rounded-full bg-emerald-500 ring-2 ring-brand-surface" />
-            </div>
-            <div className="min-w-0">
-              <h4 className="text-xs font-black text-brand-text truncate leading-tight">
-                [𝙍]𝙝𝙢𝙏
-              </h4>
-              <p className="text-[9px] text-brand-muted font-mono truncate tracking-wider mt-0.5">
-                CODE &amp; AI DEVELOPER
-              </p>
-            </div>
-          </div>
-
-          <div className="grid grid-cols-1 gap-1.5">
-            {socialLinks.map((social) => {
-              const IconComp = social.icon;
-              return (
-                <a
-                  key={social.name}
-                  href={social.url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className={`flex items-center justify-between gap-2.5 p-2 rounded-xl bg-brand-surface/70 border border-brand-surface/40 text-xs font-semibold text-brand-text transition-all ${social.color}`}
-                >
-                  <div className="flex items-center gap-2 min-w-0">
-                    <IconComp className={`w-3.5 h-3.5 flex-shrink-0 ${social.brandColor}`} />
-                    <span className="truncate text-[10px] text-brand-muted">{social.name}</span>
-                  </div>
-                  <span className={`text-[10px] font-bold truncate ${social.brandColor}`}>
-                    {social.label.replace("✧･ﾟ: ", "").replace(" :･ﾟ✧", "")}
-                  </span>
-                </a>
-              );
-            })}
-          </div>
-        </div>
-      </div>
-    );
-  }
-
-  // Full developer profile card
+  // Social Dev Layout matching the requested mockup screenshot precisely
   return (
-    <div className="w-full bg-brand-surface border border-brand-surface/80 rounded-2xl p-6 shadow-xl space-y-5">
-      <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 pb-4 border-b border-brand-bg">
-        <div className="flex items-center gap-4">
-          <div className="relative">
-            <div className="absolute inset-0 bg-brand-primary/20 rounded-full blur-md animate-pulse" />
-            <img
-              src={profileImg}
-              alt="Profile Dev"
-              referrerPolicy="no-referrer"
-              className="relative w-14 h-14 rounded-full border-2 border-brand-primary object-cover shadow-md"
-            />
-            <span className="absolute bottom-0.5 right-0.5 h-3 w-3 rounded-full bg-emerald-500 ring-2 ring-brand-surface" />
-          </div>
-          <div>
-            <div className="flex items-center gap-1.5">
-              <h3 className="text-base font-black text-brand-text">
-                {devName}
-              </h3>
-            </div>
-            <p className="text-xs font-mono font-bold text-brand-primary uppercase tracking-widest mt-1">
-              Social Developer &amp; AI Engineer
-            </p>
-          </div>
+    <div className="w-full flex flex-col items-center justify-center py-10 px-4 bg-[#0a0b0d] rounded-3xl border border-zinc-900/40">
+      {/* 1. Sleek Rounded Dark Card - Precise proportions */}
+      <div className="max-w-[350px] w-full bg-[#111214] border border-zinc-800/60 rounded-[1.8rem] p-8 text-center shadow-2xl relative overflow-hidden">
+        {/* Subtle background glow */}
+        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-28 h-28 bg-[#00a884]/5 rounded-full blur-3xl pointer-events-none" />
+
+        {/* Circular Profile Avatar with exact styling */}
+        <div className="relative mx-auto w-[76px] h-[76px] rounded-full flex items-center justify-center mb-4">
+          <div className="absolute inset-0 rounded-full border border-zinc-700/60 animate-pulse" />
+          <img
+            src={profileImg}
+            alt="[𝙍]𝙝𝙢𝙏 Profile"
+            referrerPolicy="no-referrer"
+            className="w-[70px] h-[70px] rounded-full object-cover border-2 border-[#111214]"
+          />
+          {/* Active Online Indicator Pulse */}
+          <span className="absolute bottom-1 right-1 h-3 w-3 rounded-full bg-emerald-500 border-[2px] border-[#111214]" />
         </div>
-        <div className="bg-brand-primary/5 border border-brand-primary/10 px-3 py-1.5 rounded-xl">
-          <span className="text-[10px] font-bold text-brand-primary font-mono uppercase tracking-wider">
-            Verified Creator
-          </span>
-        </div>
+
+        {/* Developer Custom Star Name */}
+        <h3 className="text-white font-extrabold text-[14px] sm:text-[14.5px] tracking-wide flex items-center justify-center gap-1.5 mb-2.5">
+          <span className="text-zinc-400">✨•° :</span>
+          <span className="text-white font-black">[𝙍]𝙝𝙢𝙏 | 𝘾𝙤𝙙𝙚⚙️𝘼𝙄 𝙡</span>
+          <span className="text-zinc-400">:•° ✨</span>
+        </h3>
+
+        {/* Beautiful Description Text */}
+        <p className="text-[11px] sm:text-[11.5px] text-zinc-400 leading-relaxed font-normal max-w-xs mx-auto mb-5 px-1">
+          Gabung saluran WhatsApp resmi sekarang untuk update script, engine AI, template desain, dan diskusi pemrograman gratis.
+        </p>
+
+        {/* Custom Green WhatsApp Channel Button with direct cursor and smooth hover */}
+        <a
+          href={whatsappUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="inline-flex items-center justify-center gap-2 bg-[#00a884] hover:bg-[#008f72] active:scale-95 text-white font-extrabold text-[11.5px] px-6 py-2.5 rounded-full transition-all duration-200 shadow-md cursor-pointer"
+        >
+          <WhatsAppIcon className="w-4 h-4 text-white flex-shrink-0" />
+          <span>Join Channel WA</span>
+        </a>
       </div>
 
-      <p className="text-xs text-brand-muted leading-relaxed">
-        Silakan ikuti pembaruan terkini seputar rekayasa kode, pengembangan AI, serta sintesis sistem cerdas melalui kanal-kanal sosial resmi di bawah ini.
-      </p>
+      {/* 2. Media Links & Credit Section Below Card */}
+      <div className="w-full flex flex-col items-center mt-10">
+        <h4 className="text-[9.5px] font-black text-zinc-500 font-mono tracking-[0.25em] text-center mb-5 uppercase">
+          SOCIAL MEDIA DEVELOPER
+        </h4>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-5 gap-3">
-        {socialLinks.map((social) => {
-          const IconComp = social.icon;
-          return (
-            <a
-              key={social.name}
-              href={social.url}
-              target="_blank"
-              rel="noopener noreferrer"
-              className={`flex flex-col items-center justify-center text-center p-4 rounded-xl bg-brand-bg/30 border border-brand-surface hover:scale-[1.02] active:scale-[0.98] transition-all duration-300 ${social.color}`}
-            >
-              <div className="p-2.5 rounded-full bg-brand-surface shadow-xs mb-2.5">
-                <IconComp className={`w-5 h-5 ${social.brandColor}`} />
-              </div>
-              <span className="text-xs font-black text-brand-text mb-0.5 block">
-                {social.name}
-              </span>
-              <span className="text-[10px] text-brand-muted truncate max-w-full font-semibold">
-                {social.label.length > 24 ? social.label.substring(0, 22) + "..." : social.label}
-              </span>
-            </a>
-          );
-        })}
+        {/* Row of centered circular icons with hover brand effects */}
+        <div className="flex items-center gap-3.5 justify-center">
+          {/* WhatsApp */}
+          <a
+            href={whatsappUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            title="WhatsApp Channel"
+            className="w-[44px] h-[44px] rounded-full border border-zinc-800/80 bg-[#111214] hover:bg-zinc-900 flex items-center justify-center text-zinc-400 hover:text-emerald-400 hover:border-emerald-500/40 hover:scale-105 active:scale-95 transition-all duration-200 cursor-pointer"
+          >
+            <WhatsAppIcon className="w-4.5 h-4.5" />
+          </a>
+
+          {/* Instagram */}
+          <a
+            href={instagramUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            title="Instagram"
+            className="w-[44px] h-[44px] rounded-full border border-zinc-800/80 bg-[#111214] hover:bg-zinc-900 flex items-center justify-center text-zinc-400 hover:text-pink-500 hover:border-pink-500/40 hover:scale-105 active:scale-95 transition-all duration-200 cursor-pointer"
+          >
+            <InstagramIcon className="w-4.5 h-4.5" />
+          </a>
+
+          {/* TikTok */}
+          <a
+            href={tiktokUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            title="TikTok"
+            className="w-[44px] h-[44px] rounded-full border border-zinc-800/80 bg-[#111214] hover:bg-zinc-900 flex items-center justify-center text-zinc-400 hover:text-purple-400 hover:border-purple-500/40 hover:scale-105 active:scale-95 transition-all duration-200 cursor-pointer"
+          >
+            <TikTokIcon className="w-4.5 h-4.5" />
+          </a>
+
+          {/* Telegram */}
+          <a
+            href={telegramUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            title="Telegram"
+            className="w-[44px] h-[44px] rounded-full border border-zinc-800/80 bg-[#111214] hover:bg-zinc-900 flex items-center justify-center text-zinc-400 hover:text-sky-400 hover:border-sky-500/40 hover:scale-105 active:scale-95 transition-all duration-200 cursor-pointer"
+          >
+            <TelegramIcon className="w-4.5 h-4.5" />
+          </a>
+        </div>
+
+        {/* Divider Line precisely matching the design */}
+        <div className="w-full max-w-[320px] border-t border-zinc-900/80 my-7" />
+
+        {/* Beautiful footer branding credits */}
+        <p className="text-[11px] text-zinc-500 font-mono tracking-wide text-center">
+          Credit by{" "}
+          <a
+            href={personalWebUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-emerald-400 hover:text-emerald-300 font-extrabold hover:underline transition-colors"
+          >
+            rhmt
+          </a>{" "}
+          &amp; source by{" "}
+          <span className="text-emerald-400 font-extrabold hover:text-emerald-300 transition-colors">
+            ditzz
+          </span>
+          {" "}.
+        </p>
+
+        {/* WhatsApp Direct Link text with arrow */}
+        <a
+          href={whatsappUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="inline-flex items-center gap-1.5 text-[11px] font-bold text-zinc-400 hover:text-emerald-400 transition-colors mt-3 font-mono cursor-pointer"
+        >
+          <span>WhatsApp Rhmt</span>
+          <span className="text-[11px] font-sans">➔</span>
+        </a>
       </div>
     </div>
   );
