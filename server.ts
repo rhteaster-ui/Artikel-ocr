@@ -1,6 +1,7 @@
 import express from "express";
 import path from "path";
 import fs from "fs";
+import os from "os";
 import { GoogleGenAI, Type } from "@google/genai";
 import dotenv from "dotenv";
 
@@ -437,9 +438,9 @@ async function performILovePdfOCR(base64Data: string, filename: string, mimeType
     const { default: ILovePDFFile } = await import("@ilovepdf/ilovepdf-nodejs/ILovePDFFile.js");
     const ilovepdf = new ILovePDF(publicKey, secretKey);
 
-    const tempDir = path.join(process.cwd(), "temp");
+    const tempDir = os.tmpdir();
     if (!fs.existsSync(tempDir)) {
-      fs.mkdirSync(tempDir);
+      fs.mkdirSync(tempDir, { recursive: true });
     }
     
     // Clean filename to prevent path traversal
