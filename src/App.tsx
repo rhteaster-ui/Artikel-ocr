@@ -148,20 +148,19 @@ export default function App() {
     }
   };
 
-  // Triggered when a URL, pasted text, or search query is analyzed
-  const handleAnalyze = async (payload: { url?: string; text?: string; title?: string; query?: string }) => {
+  // Triggered when a URL, pasted text, search query, or multiple sources are analyzed
+  const handleAnalyze = async (payload: { url?: string; text?: string; title?: string; query?: string; file?: string; filename?: string; mimeType?: string; sources?: any[] }) => {
     setPendingPayload(payload);
     setPeekData(null);
     setIsLoading(true);
 
-    // If it's a URL, launch an instantaneous peek fetch for title & thumbnail
-    if (payload.url) {
+    // If it's a single URL or multiple sources with at least one URL, launch an instantaneous peek fetch for title & thumbnail
+    const firstUrl = payload.url || (payload.sources && payload.sources.find(s => s.url)?.url);
+    if (firstUrl) {
       fetch("/api/peek", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ url: payload.url }),
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ url: firstUrl }),
       })
         .then((res) => res.json())
         .then((meta) => {
