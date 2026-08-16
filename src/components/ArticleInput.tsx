@@ -1,9 +1,9 @@
 import React, { useState, useRef } from "react";
 import { motion, AnimatePresence } from "motion/react";
-import { Link, AlertCircle, Globe, ArrowRight, Cpu, FileText, UploadCloud, Trash2, CheckCircle2 } from "lucide-react";
+import { Link, AlertCircle, Globe, ArrowRight, Cpu, FileText, UploadCloud, Trash2, CheckCircle2, Plus } from "lucide-react";
 
 interface ArticleInputProps {
-  onAnalyze: (payload: { url?: string; text?: string; title?: string; query?: string; file?: string; filename?: string; mimeType?: string }) => Promise<void>;
+  onAnalyze: (payload: { url?: string; text?: string; title?: string; query?: string; file?: string; filename?: string; mimeType?: string; sources?: any[] }) => Promise<void>;
   isLoading: boolean;
 }
 
@@ -17,9 +17,15 @@ export default function ArticleInput({ onAnalyze, isLoading }: ArticleInputProps
   const [isDragging, setIsDragging] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  // Multi-source states
+  const [sources, setSources] = useState<any[]>([]);
+
+  const handleAddSource = async () => {
     setError(null);
+    if (sources.length >= 2) {
+      setError("Maksimal 2 sumber dapat dianalisis sekaligus.");
+      return;
+    }
 
     if (activeTab === "url") {
       if (!url.trim()) {
@@ -30,28 +36,71 @@ export default function ArticleInput({ onAnalyze, isLoading }: ArticleInputProps
         setError("Format URL tidak valid. Pastikan diawali dengan http:// atau https://");
         return;
       }
-      try {
-        await onAnalyze({ url: url.trim() });
-      } catch (err: any) {
-        setError(err.message || "Gagal menganalisis artikel dari URL tersebut.");
-      }
+      setSources([...sources, { type: "url", url: url.trim() }]);
+      setUrl("");
     } else {
-      // File upload mode
       if (!selectedFile) {
         setError("Silakan pilih atau seret file PDF/Gambar terlebih dahulu.");
         return;
       }
-
       try {
         const base64Data = await readFileAsBase64(selectedFile);
-        await onAnalyze({
-          file: base64Data,
-          filename: selectedFile.name,
-          mimeType: selectedFile.type
-        });
+        setSources([...sources, { type: "file", file: base64Data, filename: selectedFile.name, mimeType: selectedFile.type }]);
+        setSelectedFile(null);
+        if (fileInputRef.current) fileInputRef.current.value = "";
       } catch (err: any) {
         setError(err.message || "Gagal membaca atau memproses dokumen.");
       }
+    }
+  };
+
+  const handleRemoveSource = (index: number) => {
+    setSources(sources.filter((_, i) => i !== index));
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError(null);
+
+    let finalSources = [...sources];
+    
+    // If there is pending input not added to the list, add it if there's room
+    if (finalSources.length === 0 || (finalSources.length === 1 && (url.trim() || selectedFile))) {
+      if (activeTab === "url" && url.trim()) {
+        if (!url.startsWith("http://") && !url.startsWith("https://")) {
+          setError("Format URL tidak valid. Pastikan diawali dengan http:// atau https://");
+          return;
+        }
+        finalSources.push({ type: "url", url: url.trim() });
+      } else if (activeTab === "file" && selectedFile) {
+        try {
+          const base64Data = await readFileAsBase64(selectedFile);
+          finalSources.push({ type: "file", file: base64Data, filename: selectedFile.name, mimeType: selectedFile.type });
+        } catch (err: any) {
+          setError(err.message || "Gagal membaca dokumen.");
+          return;
+        }
+      }
+    }
+
+    if (finalSources.length === 0) {
+      setError("Silakan tambahkan minimal 1 URL atau Berkas untuk dianalisis.");
+      return;
+    }
+
+    try {
+      if (finalSources.length === 1) {
+        const src = finalSources[0];
+        if (src.type === "url") {
+          await onAnalyze({ url: src.url });
+        } else {
+          await onAnalyze({ file: src.file, filename: src.filename, mimeType: src.mimeType });
+        }
+      } else {
+        await onAnalyze({ sources: finalSources });
+      }
+    } catch (err: any) {
+      setError(err.message || "Gagal menganalisis dokumen.");
     }
   };
 
@@ -326,30 +375,73 @@ export default function ArticleInput({ onAnalyze, isLoading }: ArticleInputProps
           )}
         </AnimatePresence>
 
-        {/* Submit Button */}
-        <button
-          id="analyze-submit-btn"
-          type="submit"
-          disabled={isLoading}
-          className="w-full flex items-center justify-center gap-2 py-3.5 px-4 bg-brand-btn-bg hover:opacity-90 text-brand-btn-text rounded-xl font-bold text-xs transition-all shadow-md active:scale-[0.99] disabled:opacity-50 disabled:pointer-events-none uppercase tracking-wider font-sans border border-brand-surface"
-        >
-          {isLoading ? (
-            <>
-              <motion.div
-                animate={{ rotate: 360 }}
-                transition={{ repeat: Infinity, duration: 1, ease: "linear" }}
-                className="w-4 h-4 border-2 border-brand-btn-text border-t-transparent rounded-full"
-              />
-              Mengekstrak Dokumen & Menganalisis...
-            </>
-          ) : (
-            <>
-              <Cpu className="w-4 h-4 text-brand-btn-text/80 animate-pulse" />
-              <span>{activeTab === "url" ? "Mulai Ekstraksi & Analisis AI" : "Unggah & Ekstrak Teks OCR Sekarang"}</span>
-              <ArrowRight className="w-4 h-4" />
-            </>
+        {/* Sources Cart */}
+        {sources.length > 0 && (
+          <div className="space-y-3 mt-4 mb-2 p-4 border border-brand-primary/30 bg-brand-primary/5 rounded-xl">
+            <h3 className="text-xs font-bold text-brand-primary uppercase tracking-wider font-mono">Daftar Sumber ({sources.length}/2)</h3>
+            <div className="space-y-2">
+              {sources.map((src, idx) => (
+                <div key={idx} className="flex items-center justify-between p-3 rounded-lg bg-brand-surface border border-brand-surface shadow-sm">
+                  <div className="flex items-center gap-3 truncate">
+                    <div className="w-8 h-8 rounded-md bg-brand-bg flex items-center justify-center text-brand-primary flex-shrink-0">
+                      {src.type === "url" ? <Globe className="w-4 h-4" /> : <FileText className="w-4 h-4" />}
+                    </div>
+                    <span className="text-xs font-semibold text-brand-text truncate">
+                      {src.type === "url" ? src.url : src.filename}
+                    </span>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => handleRemoveSource(idx)}
+                    disabled={isLoading}
+                    className="p-1.5 text-brand-muted hover:text-brand-error rounded-md transition-colors"
+                  >
+                    <Trash2 className="w-4 h-4" />
+                  </button>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Action Buttons */}
+        <div className="flex gap-3">
+          {sources.length < 2 && (
+            <button
+              type="button"
+              onClick={handleAddSource}
+              disabled={isLoading || (!url.trim() && !selectedFile)}
+              className="flex-1 flex items-center justify-center gap-2 py-3.5 px-4 bg-brand-surface hover:bg-brand-bg text-brand-text rounded-xl font-bold text-xs transition-all border border-brand-surface disabled:opacity-50"
+            >
+              <Plus className="w-4 h-4" />
+              <span>Tambah Ke Antrean ({sources.length}/2)</span>
+            </button>
           )}
-        </button>
+
+          <button
+            id="analyze-submit-btn"
+            type="submit"
+            disabled={isLoading || (sources.length === 0 && !url.trim() && !selectedFile)}
+            className={`${sources.length < 2 ? 'flex-[2]' : 'w-full'} flex items-center justify-center gap-2 py-3.5 px-4 bg-brand-btn-bg hover:opacity-90 text-brand-btn-text rounded-xl font-bold text-xs transition-all shadow-md active:scale-[0.99] disabled:opacity-50 disabled:pointer-events-none uppercase tracking-wider font-sans border border-brand-surface`}
+          >
+            {isLoading ? (
+              <>
+                <motion.div
+                  animate={{ rotate: 360 }}
+                  transition={{ repeat: Infinity, duration: 1, ease: "linear" }}
+                  className="w-4 h-4 border-2 border-brand-btn-text border-t-transparent rounded-full"
+                />
+                Mengekstrak & Menganalisis...
+              </>
+            ) : (
+              <>
+                <Cpu className="w-4 h-4 text-brand-btn-text/80 animate-pulse" />
+                <span>Mulai Analisis {sources.length > 0 ? `(${sources.length + ((activeTab === "url" && url.trim() && sources.length < 2) || (activeTab === "file" && selectedFile && sources.length < 2) ? 1 : 0)} Sumber)` : ''}</span>
+                <ArrowRight className="w-4 h-4" />
+              </>
+            )}
+          </button>
+        </div>
       </form>
 
       {/* Suggested URL Samples */}
