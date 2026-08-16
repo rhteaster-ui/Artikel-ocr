@@ -1,7 +1,6 @@
 import express from "express";
 import path from "path";
 import fs from "fs";
-import os from "os";
 import { GoogleGenAI, Type } from "@google/genai";
 import dotenv from "dotenv";
 
@@ -46,8 +45,10 @@ let analysisSessionCounter = 0;
 
 // Helper to get active Gemini client based on rotation index
 function getGeminiClient(keyIndex: number): GoogleGenAI {
+  const k1 = process.env.GEMINII_API_KEY || process.env.GEMINI_API_KEY;
+  const k2 = process.env.GEMINI_API_KEY_SECONDARY || process.env.GEMINI_API_KEY_BACKUP;
   // If keyIndex is 2 and we actually have Key 2 configured, use it! Otherwise fallback to Key 1
-  const selectedKey = (keyIndex === 2 && KEY_2) ? KEY_2 : (KEY_1 || KEY_2);
+  const selectedKey = (keyIndex === 2 && k2) ? k2 : (k1 || k2);
   
   return new GoogleGenAI({
     apiKey: selectedKey,
@@ -148,9 +149,11 @@ async function generateContentWithFallback(
   const modelsToTry = [options.model, "gemini-3.1-flash-lite"];
   
   // We want to try both keys (if configured)
+  const k1 = process.env.GEMINII_API_KEY || process.env.GEMINI_API_KEY;
+  const k2 = process.env.GEMINI_API_KEY_SECONDARY || process.env.GEMINI_API_KEY_BACKUP;
   const keysToTry = [currentKeyIndex];
   const alternativeKeyIndex = currentKeyIndex === 1 ? 2 : 1;
-  const hasAlternativeKey = alternativeKeyIndex === 2 ? !!KEY_2 : !!KEY_1;
+  const hasAlternativeKey = alternativeKeyIndex === 2 ? !!k2 : !!k1;
   if (hasAlternativeKey) {
     keysToTry.push(alternativeKeyIndex);
   }
@@ -438,9 +441,9 @@ async function performILovePdfOCR(base64Data: string, filename: string, mimeType
     const { default: ILovePDFFile } = await import("@ilovepdf/ilovepdf-nodejs/ILovePDFFile.js");
     const ilovepdf = new ILovePDF(publicKey, secretKey);
 
-    const tempDir = os.tmpdir();
+    const tempDir = path.join(process.cwd(), "temp");
     if (!fs.existsSync(tempDir)) {
-      fs.mkdirSync(tempDir, { recursive: true });
+      fs.mkdirSync(tempDir);
     }
     
     // Clean filename to prevent path traversal
@@ -532,68 +535,89 @@ app.post("/api/analyze", async (req, res) => {
       return res.status(429).json({ error: "Batas penganalisisan terlampaui. Anda hanya diizinkan menganalisis maksimal 5 artikel per menit." });
     }
 
-    const { url, text: manualText, title: manualTitle, file, filename, mimeType } = req.body;
-    let articleTitle = manualTitle || "Teks Manual";
-    let articleText = manualText || "";
-    let ocrMethodUsed: "ilovepdf" | "gemini-fallback" | "none" = "none";
+    const { url, text: manualText, title: manualTitle, file, filename, mimeType, sources } = req.body;
+    
+    // Normalize inputs into an array of sources
+    let inputSources = sources || [];
+    if (inputSources.length === 0) {
+      if (url || manualText || file) {
+        inputSources.push({ url, text: manualText, title: manualTitle, file, filename, mimeType });
+      }
+    }
+
+    if (inputSources.length === 0) {
+      return res.status(400).json({ error: "Tidak ada sumber data yang diberikan." });
+    }
+
+    if (inputSources.length > 2) {
+      return res.status(400).json({ error: "Maksimal 2 sumber data yang dapat dianalisis sekaligus." });
+    }
 
     // Increment analysis session counter for key rotation early
     analysisSessionCounter++;
     // Alternates between Key index 1 and index 2
     const keyIndexUsed = (analysisSessionCounter % 2 === 0) ? 2 : 1;
 
-    if (url) {
-      const scraped = await scrapeUrl(url);
-      articleTitle = scraped.title;
-      articleText = scraped.text;
-    } else if (file) {
-      articleTitle = filename || "Dokumen Unggahan";
-      try {
-        const ocrResult = await performILovePdfOCR(file, filename || "document.pdf", mimeType || "application/pdf");
-        ocrMethodUsed = ocrResult.method;
-        
-        const fileToExtract = ocrResult.pdfBase64 || file;
-        const extractedMimeType = ocrResult.pdfBase64 ? "application/pdf" : (mimeType || "application/pdf");
-        
-        articleText = await extractTextFromDocument(fileToExtract, extractedMimeType, keyIndexUsed);
-      } catch (ocrErr: any) {
-        console.error("OCR / Extraction failed:", ocrErr);
-        return res.status(500).json({ error: `Gagal mengekstrak teks dari dokumen: ${ocrErr.message || ocrErr}` });
+    let combinedTitle = "";
+    let combinedText = "";
+    let overallCacheKey = "";
+
+    // Process all sources
+    for (let i = 0; i < inputSources.length; i++) {
+      const src = inputSources[i];
+      let articleTitle = src.title || `Sumber ${i + 1}`;
+      let articleText = src.text || "";
+
+      if (src.url) {
+        const scraped = await scrapeUrl(src.url);
+        articleTitle = scraped.title;
+        articleText = scraped.text;
+        overallCacheKey += `url_${src.url.trim().toLowerCase()}_`;
+      } else if (src.file) {
+        articleTitle = src.filename || `Dokumen Unggahan ${i + 1}`;
+        try {
+          const ocrResult = await performILovePdfOCR(src.file, src.filename || `document_${i}.pdf`, src.mimeType || "application/pdf");
+          
+          const fileToExtract = ocrResult.pdfBase64 || src.file;
+          const extractedMimeType = ocrResult.pdfBase64 ? "application/pdf" : (src.mimeType || "application/pdf");
+          
+          articleText = await extractTextFromDocument(fileToExtract, extractedMimeType, keyIndexUsed);
+        } catch (ocrErr: any) {
+          console.error("OCR / Extraction failed:", ocrErr);
+          return res.status(500).json({ error: `Gagal mengekstrak teks dari dokumen: ${ocrErr.message || ocrErr}` });
+        }
+        overallCacheKey += `file_${src.filename}_${articleText.length}_`;
+      } else if (articleText) {
+        overallCacheKey += `text_${articleText.length}_${articleText.substring(0, 50)}_`;
       }
+
+      if (!articleText || articleText.trim().length === 0) {
+        return res.status(400).json({ error: `Konten dari sumber ke-${i + 1} kosong atau gagal diekstrak.` });
+      }
+
+      combinedTitle += (i > 0 ? " & " : "") + articleTitle;
+      combinedText += `\n\n--- SUMBER ${i + 1}: ${articleTitle} ---\n${articleText}`;
     }
 
-    if (!articleText || articleText.trim().length === 0) {
-      return res.status(400).json({ error: "Konten artikel tidak boleh kosong atau gagal diekstrak." });
-    }
-
-    // Caching check to prevent redundant API calls and 429 quota errors
-    const cacheKey = url 
-      ? `analyze_url_${url.trim().toLowerCase()}` 
-      : file 
-        ? `analyze_file_${filename}_${articleText.length}`
-        : `analyze_text_${articleText.length}_${articleText.substring(0, 100)}`;
-    
-    const cachedResult = getCachedData(cacheKey);
+    // Caching check
+    const cachedResult = getCachedData(overallCacheKey);
     if (cachedResult) {
-      console.log(`[Cache Hit] Mengembalikan hasil analisis dari cache untuk kunci: ${cacheKey}`);
+      console.log(`[Cache Hit] Mengembalikan hasil analisis dari cache.`);
       return res.json(cachedResult);
     }
 
-    const activeAiClient = getGeminiClient(keyIndexUsed);
-
-    // Call Gemini with Structured Schema
-    const prompt = `Analisis artikel berikut dengan seksama. 
-Judul: ${articleTitle}
+    const prompt = `Analisis informasi dari sumber berikut dengan seksama. Jika ada 2 sumber, lakukan perbandingan silang, temukan benang merah, persamaan, atau perbedaan informasinya.
+Judul / Topik: ${combinedTitle}
 Konten:
-${articleText}
+${combinedText}
 
 Instruksi Analisis:
-1. Buat ringkasan yang solid, takeaways, dan highlights.
-2. Temukan data numerik, statistik, metrik penting atau tanggal bersejarah di dalam artikel dan sertakan konteksnya.
-3. Ekstrak 3-5 klaim utama yang dibuat di artikel ini, dan analisis kevalidan/dukungan bukti (validity) di dalam teks serta kutip poin kalimat yang mendukungnya.
-4. Profil nada/gaya penulisan (tone) dalam bentuk persentase (analytical, opinionated, promotional, sensationalist, objective). Pastikan total nilai masuk akal (tidak harus berjumlah tepat 100%, tetapi merepresentasikan bobot masing-masing).
-5. Buat 3 pertanyaan tindak lanjut cerdas berdasarkan artikel untuk memicu interaksi lanjutan.
-6. Buat 3-4 saran topik pembicaraan/diskusi terbuka (discussionTopics) yang mendalam, menarik, dan relevan berdasarkan isi artikel/jurnal sebagai bahan diskusi hangat.`;
+1. Buat ringkasan yang solid, takeaways, dan highlights. Jika ada 2 sumber, tunjukkan keterkaitan keduanya.
+2. Temukan data numerik, statistik, metrik penting atau tanggal bersejarah di dalam sumber dan sertakan konteksnya.
+3. Ekstrak 3-5 klaim utama. Analisis kevalidan/dukungan bukti (validity) di dalam teks serta kutip poin kalimat yang mendukungnya. **PENTING: Anda diizinkan menggunakan pengetahuan umum / wawasan eksternal Anda (external knowledge) yang valid untuk mengevaluasi klaim ini atau memberikan konteks tambahan, tidak terbatas hanya pada isi teks, namun tetap objektif dan faktual!**
+4. Profil nada/gaya penulisan (tone) dalam bentuk persentase.
+5. Buat 3 pertanyaan tindak lanjut cerdas untuk memicu interaksi lanjutan.
+6. Buat 3-4 saran topik pembicaraan/diskusi terbuka (discussionTopics) yang mendalam, menarik, dan relevan.`;
 
     const { response, finalKeyIndex } = await generateContentWithFallback(keyIndexUsed, {
       model: "gemini-3.5-flash",
@@ -701,13 +725,13 @@ Instruksi Analisis:
     const analysis = JSON.parse(resultText);
 
     const responsePayload = {
-      title: articleTitle,
-      text: articleText,
+      title: combinedTitle,
+      text: combinedText,
       analysis,
       keyIndexUsed: finalKeyIndex, // Client preserves this to maintain same key for chat session
     };
 
-    setCachedData(cacheKey, responsePayload);
+    setCachedData(overallCacheKey, responsePayload);
 
     res.json(responsePayload);
   } catch (error: any) {
@@ -731,18 +755,18 @@ app.post("/api/chat", async (req, res) => {
       return res.status(400).json({ error: "Konten artikel dan pesan tidak boleh kosong." });
     }
 
-    const systemInstruction = `Anda adalah asisten analisis artikel yang cerdas, objektif, dan sangat patuh.
-Anda sedang berdiskusi mengenai artikel berjudul: "${articleTitle}".
-Berikut adalah teks UTUH/ASLI dari artikel tersebut:
+    const systemInstruction = `Anda adalah asisten analisis artikel yang cerdas, objektif, dan berwawasan luas.
+Anda sedang berdiskusi mengenai sumber informasi berikut berjudul: "${articleTitle}".
+Berikut adalah teks UTUH/ASLI dari sumber tersebut:
 """
 ${articleText}
 """
 
-ATURAN PERCAKAPAN YANG SANGAT KETAT:
-1. Anda HARUS menjawab pertanyaan pengguna HANYA berdasarkan fakta, data, dan informasi yang tertera dalam teks artikel di atas.
-2. Jika informasi atau jawaban dari pertanyaan pengguna TIDAK ADA atau TIDAK TERCANTUM dalam teks artikel, Anda harus menjawab secara tegas dan sopan: "Informasi ini tidak tercantum dalam artikel." Jangan mengarang jawaban!
-3. Jika pengguna menyuruh Anda berpendapat atau berasumsi ("menurut Anda", "bagaimana pendapatmu"), Anda BOLEH memberikan pendapat/asumsi namun harus di-anchor (dikaitkan langsung) dengan data atau premis yang ada di artikel tersebut. Beritahu pengguna secara jelas bahwa ini adalah ekstapolasi logis berdasarkan teks.
-4. Hindari halusinasi informasi sama sekali. Berikan poin paragraf atau bagian dari teks jika pengguna menanyakan "poin dimana informasi tersebut".
+ATURAN PERCAKAPAN:
+1. Jawab pertanyaan pengguna berdasarkan teks yang diberikan.
+2. **PENTING:** Anda DIIZINKAN untuk menggunakan pengetahuan umum Anda (external knowledge) untuk melengkapi jawaban, memberikan konteks sejarah/fakta tambahan, atau menjelaskan konsep yang mungkin tidak ada di artikel. Anda tidak terbatas hanya pada teks!
+3. Jika Anda memberikan informasi dari luar artikel, jelaskan secara singkat dan objektif bahwa itu adalah informasi umum/tambahan.
+4. Jangan mengarang fakta (no hallucination). Jika suatu spesifik hal tidak diketahui, katakan saja Anda tidak tahu.
 5. Jawablah menggunakan bahasa yang sama dengan bahasa pertanyaan pengguna (secara default Bahasa Indonesia).`;
 
     // Map chat history to match the Gemini contents parameter structure
